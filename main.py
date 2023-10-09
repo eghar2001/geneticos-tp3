@@ -102,6 +102,28 @@ ciudades = ["Ciudad autonoma de Bs.As.", "Cordoba", "Corrientes", "Formosa", "La
             "San Juan", "San Luis", "Santa Fe", "Santa Rosa", "Santiago del estero", "Ushuaia", "Viedma"]
 
 
+def get_recorrido_minimo( ciu_inicial:int):
+    distancias_entre_ciudades_copy = deepcopy(distancias_entre_ciudades)
+    ciu_actual = ciu_inicial
+    ciudades_visitadas = [ciu_actual]
+    acum_distancia = 0
+    for i in range(len(ciudades)-1):
+        distancias = distancias_entre_ciudades_copy[ciu_actual]
+        distancias.remove((ciu_actual, ciu_actual, 0))
+        index_prov_mas_cercana = 0
+        minima_distancia = 1000000000000
+        for (i, prov, dist) in distancias:
+            if dist<minima_distancia and prov not in ciudades_visitadas:
+                minima_distancia = dist
+                index_prov_mas_cercana = prov
+        acum_distancia += minima_distancia
+        ciu_actual = index_prov_mas_cercana
+        ciudades_visitadas.append(index_prov_mas_cercana)
+    acum_distancia += distancias_entre_ciudades_copy[ciu_actual][ciudades_visitadas[0]][2]
+    ciudades_visitadas.append(ciu_inicial)
+    ciudades_visitadas_str =[ ciudades[ciu] for ciu in ciudades_visitadas]
+    return ciudades_visitadas_str, acum_distancia
+
 
 def opcion1():
     mejorRecorrido = []
@@ -109,37 +131,33 @@ def opcion1():
     for (i, prov) in enumerate(ciudades):
         print(f"{i}--{prov}")
     print("Ingrese numero de la provinica que quiera elegir:")
-    ciu_actual = int(input())
-    ciudades_visitadas = [ciu_actual]
+    ciu_inicial_int = int(input())
+    trayecto,distancia_recorrida = get_recorrido_minimo(ciu_inicial_int)
+    ciu_inicial = ciudades[ciu_inicial_int]
+    print(f"Ciudad inicial: {ciu_inicial}")
+    print(f"Longitud de trayecto: {distancia_recorrida}")
+    print(f"Trayecto: \n{trayecto}")
 
 
+def opcion2():
+    recorridos = [get_recorrido_minimo(ciu) for ciu in range(24) ]
+    (min_recorrido, min_distancia) = recorridos[0][0],recorridos[0][1]
+    for (reco, dist) in recorridos:
+        if dist<min_distancia:
+            min_recorrido = reco
+            min_distancia = dist
+    print(f"Ciudad inicial: {min_recorrido[0]}")
+    print(f"Longitud de trayecto: {min_distancia}")
+    print(f"Trayecto: \n{min_recorrido}")
 
 
-
-    acum_distancia = 0
-    for i in range(len(ciudades)-1):
-        distancias = distancias_entre_ciudades[ciu_actual]
-        distancias.remove((ciu_actual, ciu_actual, 0))
-        index_prov_mas_cercana = 0
-        minima_distancia = 1000000000000
-        print(ciudades_visitadas)
-        for (i, prov, dist) in distancias:
-            if dist<minima_distancia and prov not in ciudades_visitadas:
-                minima_distancia = dist
-                index_prov_mas_cercana = prov
-        print(minima_distancia)
-        acum_distancia += minima_distancia
-        ciu_actual = index_prov_mas_cercana
-        ciudades_visitadas.append(index_prov_mas_cercana)
-    acum_distancia += distancias_entre_ciudades[ciu_actual][ciudades_visitadas[0]][2]
-    print(acum_distancia)
 
 
 ##MENU
 def menu(opciones):
     while (opciones < 4):
         os.system('cls')
-        print("Selecciona una opciÃ³n")
+        print("Selecciona una opcion")
         print()
         print("1- Busqueda heuristica ingresando una capital")
         print("2- Busqueda heuristica con minimo posible")
@@ -152,7 +170,7 @@ def menu(opciones):
 
         if opciones == 2:
             os.system('cls')
-            # opcion2()
+            opcion2()
         if opciones == 3:
             os.system('cls')
             # opcion3()
