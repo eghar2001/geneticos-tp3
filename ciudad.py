@@ -7,10 +7,12 @@ class Ciudad:
 
     _id:int
     _nombre:str
+    _ubicacion:List[int]
 
-    def __init__(self,id:int , nombre:str):
+    def __init__(self,id:int , nombre:str, ubicacion:List[int]):
         self._id =  id
         self._nombre = nombre
+        self._ubicacion = ubicacion
 
 
     @property
@@ -18,12 +20,14 @@ class Ciudad:
         return self._id
 
     @property
+    def ubicacion(self) -> List[int]:
+        return self._ubicacion
+
+    @property
     def nombre(self) -> str:
         return self._nombre
 
-    @nombre.setter
-    def nombre(self,value:str):
-        self._nombre = value
+
 
 
 

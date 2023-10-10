@@ -1,7 +1,7 @@
 from copy import deepcopy
 from ciudad import Ciudad
 from data import ciudades
-from utils import get_distancia
+from utils import get_distancia, dibujar_recorrido
 import os
 
 def get_recorrido_minimo( ciu_inicial:Ciudad):
@@ -43,10 +43,11 @@ def opcion1():
     print("Ingrese numero de la provinica que quiera elegir:")
     ciu_inicial_index = int(input())
     ciu_inicial = ciudades[ciu_inicial_index]
-    trayecto,distancia_recorrida = get_recorrido_minimo(ciu_inicial)
+    recorrido,distancia_recorrida = get_recorrido_minimo(ciu_inicial)
     print(f"Ciudad inicial: {ciu_inicial}")
     print(f"Longitud de trayecto: {distancia_recorrida}")
-    print(f"Trayecto: \n{trayecto}")
+    print(f"Trayecto: \n{recorrido}")
+    dibujar_recorrido(recorrido,distancia_recorrida)
 
 
 def opcion2():
@@ -59,6 +60,8 @@ def opcion2():
     print(f"Ciudad inicial: {min_recorrido[0]}")
     print(f"Longitud de trayecto: {min_distancia}")
     print(f"Trayecto: \n{min_recorrido}")
+    dibujar_recorrido(min_recorrido,min_distancia)
+
 
 
 
