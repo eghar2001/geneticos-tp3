@@ -1,128 +1,68 @@
-
-import os
 from copy import deepcopy
-
-distancias_entre_ciudades = [
-    [(0, 0, 0), (0, 1, 646), (0, 2, 792), (0, 3, 933), (0, 4, 53), (0, 5, 986), (0, 6, 985), (0, 7, 989), (0, 8, 375),
-     (0, 9, 834), (0, 10, 1127), (0, 11, 794), (0, 12, 2082), (0, 13, 979), (0, 14, 1080), (0, 15, 1334), (0, 16, 1282),
-     (0, 17, 1005), (0, 18, 749), (0, 19, 393), (0, 20, 579), (0, 21, 939), (0, 22, 2373), (0, 23, 799)],
-    [(1, 0, 646), (1, 1, 0), (1, 2, 677), (1, 3, 824), (1, 4, 698), (1, 5, 340), (1, 6, 466), (1, 7, 907), (1, 8, 348),
-     (1, 9, 919), (1, 10, 1321), (1, 11, 669), (1, 12, 2281), (1, 13, 362), (1, 14, 517), (1, 15, 809), (1, 16, 745),
-     (1, 17, 412), (1, 18, 293), (1, 19, 330), (1, 20, 577), (1, 21, 401), (1, 22, 2618), (1, 23, 1047)],
-    [(2, 0, 792), (2, 1, 677), (2, 2, 0), (2, 3, 157), (2, 4, 830), (2, 5, 814), (2, 6, 1131), (2, 7, 1534),
-     (2, 8, 500), (2, 9, 291), (2, 10, 1845), (2, 11, 13), (2, 12, 2819), (2, 13, 691), (2, 14, 633), (2, 15, 742),
-     (2, 16, 719), (2, 17, 1039), (2, 18, 969), (2, 19, 498), (2, 20, 1136), (2, 21, 535), (2, 22, 3131),
-     (2, 23, 1527)],
-    [(3, 0, 933), (3, 1, 824), (3, 2, 157), (3, 3, 0), (3, 4, 968), (3, 5, 927), (3, 6, 1269), (3, 7, 1690),
-     (3, 8, 656), (3, 9, 263), (3, 10, 1999), (3, 11, 161), (3, 12, 2974), (3, 13, 793), (3, 14, 703), (3, 15, 750),
-     (3, 16, 741), (3, 17, 1169), (3, 18, 1117), (3, 19, 654), (3, 20, 1293), (3, 21, 629), (3, 22, 3284),
-     (3, 23, 1681)],
-    [(4, 0, 53), (4, 1, 698), (4, 2, 830), (4, 3, 968), (4, 4, 0), (4, 5, 1038), (4, 6, 1029), (4, 7, 1005),
-     (4, 8, 427), (4, 9, 857), (4, 10, 1116), (4, 11, 833), (4, 12, 2064), (4, 13, 1030), (4, 14, 1132), (4, 15, 1385),
-     (4, 16, 1333), (4, 17, 1053), (4, 18, 795), (4, 19, 444), (4, 20, 602), (4, 21, 991), (4, 22, 2350), (4, 23, 789)],
-    [(5, 0, 986), (5, 1, 340), (5, 2, 814), (5, 3, 927), (5, 4, 1038), (5, 5, 0), (5, 6, 427), (5, 7, 1063),
-     (5, 8, 659), (5, 9, 1098), (5, 10, 1548), (5, 11, 802), (5, 12, 2473), (5, 13, 149), (5, 14, 330), (5, 15, 600),
-     (5, 16, 533), (5, 17, 283), (5, 18, 435), (5, 19, 640), (5, 20, 834), (5, 21, 311), (5, 22, 2821), (5, 23, 1311)],
-    [(6, 0, 985), (6, 1, 466), (6, 2, 1131), (6, 3, 1269), (6, 4, 1029), (6, 5, 427), (6, 6, 0), (6, 7, 676),
-     (6, 8, 790), (6, 9, 1384), (6, 10, 1201), (6, 11, 1121), (6, 12, 2081), (6, 13, 569), (6, 14, 756), (6, 15, 1023),
-     (6, 16, 957), (6, 17, 152), (6, 18, 235), (6, 19, 775), (6, 20, 586), (6, 21, 713), (6, 22, 2435), (6, 23, 1019)],
-    [(7, 0, 989), (7, 1, 907), (7, 2, 1534), (7, 3, 1690), (7, 4, 1005), (7, 5, 1063), (7, 6, 676), (7, 7, 0),
-     (7, 8, 1053), (7, 9, 1709), (7, 10, 543), (7, 11, 1529), (7, 12, 1410), (7, 13, 1182), (7, 14, 1370),
-     (7, 15, 1658), (7, 16, 1591), (7, 17, 824), (7, 18, 643), (7, 19, 1049), (7, 20, 422), (7, 21, 1286),
-     (7, 22, 1762), (7, 23, 479)],
-    [(8, 0, 375), (8, 1, 348), (8, 2, 500), (8, 3, 656), (8, 4, 427), (8, 5, 659), (8, 6, 790), (8, 7, 1053), (8, 8, 0),
-     (8, 9, 658), (8, 10, 1345), (8, 11, 498), (8, 12, 2320), (8, 13, 622), (8, 14, 707), (8, 15, 959), (8, 16, 906),
-     (8, 17, 757), (8, 18, 574), (8, 19, 19), (8, 20, 642), (8, 21, 566), (8, 22, 2635), (8, 23, 1030)],
-    [(9, 0, 834), (9, 1, 919), (9, 2, 291), (9, 3, 263), (9, 4, 857), (9, 5, 1098), (9, 6, 1384), (9, 7, 1709),
-     (9, 8, 658), (9, 9, 0), (9, 10, 1951), (9, 11, 305), (9, 12, 2914), (9, 13, 980), (9, 14, 924), (9, 15, 1007),
-     (9, 16, 992), (9, 17, 1306), (9, 18, 1200), (9, 19, 664), (9, 20, 1293), (9, 21, 827), (9, 22, 3207),
-     (9, 23, 1624)],
-    [(10, 0, 1127), (10, 1, 1321), (10, 2, 1845), (10, 3, 1999), (10, 4, 1116), (10, 5, 1548), (10, 6, 1201),
-     (10, 7, 543), (10, 8, 1345), (10, 9, 1951), (10, 10, 0), (10, 11, 1843), (10, 12, 975), (10, 13, 1647),
-     (10, 14, 1827), (10, 15, 2120), (10, 16, 2054), (10, 17, 1340), (10, 18, 1113), (10, 19, 1349), (10, 20, 745),
-     (10, 21, 1721), (10, 22, 1300), (10, 23, 327)],
-    [(11, 0, 794), (11, 1, 669), (11, 2, 13), (11, 3, 161), (11, 4, 833), (11, 5, 802), (11, 6, 1121), (11, 7, 1529),
-     (11, 8, 498), (11, 9, 305), (11, 10, 1843), (11, 11, 0), (11, 12, 2818), (11, 13, 678), (11, 14, 620),
-     (11, 15, 729), (11, 16, 706), (11, 17, 1029), (11, 18, 961), (11, 19, 495), (11, 20, 1132), (11, 21, 523),
-     (11, 22, 3130), (11, 23, 1526)],
-    [(12, 0, 2082), (12, 1, 2281), (12, 2, 2819), (12, 3, 2974), (12, 4, 2064), (12, 5, 2473), (12, 6, 2081),
-     (12, 7, 1410), (12, 8, 2320), (12, 9, 2914), (12, 10, 975), (12, 11, 2818), (12, 12, 0), (12, 13, 2587),
-     (12, 14, 2773), (12, 15, 3063), (12, 16, 2997), (12, 17, 2231), (12, 18, 2046), (12, 19, 2325), (12, 20, 1712),
-     (12, 21, 2677), (12, 22, 359), (12, 23, 1294)],
-    [(13, 0, 979), (13, 1, 362), (13, 2, 691), (13, 3, 793), (13, 4, 1030), (13, 5, 149), (13, 6, 569), (13, 7, 1182),
-     (13, 8, 622), (13, 9, 980), (13, 10, 1647), (13, 11, 678), (13, 12, 2687), (13, 13, 0), (13, 14, 189),
-     (13, 15, 477), (13, 16, 410), (13, 17, 430), (13, 18, 540), (13, 19, 602), (13, 20, 915), (13, 21, 166),
-     (13, 22, 2931), (13, 23, 1391)],
-    [(14, 0, 1080), (14, 1, 517), (14, 2, 633), (14, 3, 703), (14, 4, 1132), (14, 5, 330), (14, 6, 756), (14, 7, 1370),
-     (14, 8, 707), (14, 9, 924), (14, 10, 1827), (14, 11, 620), (14, 12, 2773), (14, 13, 189), (14, 14, 0),
-     (14, 15, 293), (14, 16, 228), (14, 17, 612), (14, 18, 727), (14, 19, 689), (14, 20, 1088), (14, 21, 141),
-     (14, 22, 3116), (14, 23, 1562)],
-    [(15, 0, 1334), (15, 1, 809), (15, 2, 742), (15, 3, 750), (15, 4, 1385), (15, 5, 600), (15, 6, 1023), (15, 7, 1658),
-     (15, 8, 959), (15, 9, 1007), (15, 10, 2120), (15, 11, 729), (15, 12, 3063), (15, 13, 477), (15, 14, 293),
-     (15, 15, 0), (15, 16, 67), (15, 17, 874), (15, 18, 1017), (15, 19, 942), (15, 20, 1382), (15, 21, 414),
-     (15, 22, 3408), (15, 23, 1855)],
-    [(16, 0, 1284), (16, 1, 745), (16, 2, 719), (16, 3, 741), (16, 4, 1333), (16, 5, 533), (16, 6, 957), (16, 7, 1591),
-     (16, 8, 906), (16, 9, 992), (16, 10, 2054), (16, 11, 706), (16, 12, 2997), (16, 13, 410), (16, 14, 228),
-     (16, 15, 67), (16, 16, 0), (16, 17, 808), (16, 18, 950), (16, 19, 889), (16, 20, 1316), (16, 21, 353),
-     (16, 22, 3341), (16, 23, 1790)],
-    [(17, 0, 1005), (17, 1, 412), (17, 2, 1039), (17, 3, 1169), (17, 4, 1053), (17, 5, 283), (17, 6, 152), (17, 7, 824),
-     (17, 8, 757), (17, 9, 1306), (17, 10, 1340), (17, 11, 1029), (17, 12, 2231), (17, 13, 430), (17, 14, 612),
-     (17, 15, 874), (17, 16, 808), (17, 17, 0), (17, 18, 284), (17, 19, 740), (17, 20, 686), (17, 21, 583),
-     (17, 22, 2585), (17, 23, 1141)],
-    [(18, 0, 749), (18, 1, 293), (18, 2, 969), (18, 3, 1117), (18, 4, 795), (18, 5, 435), (18, 6, 235), (18, 7, 643),
-     (18, 8, 574), (18, 9, 1200), (18, 10, 1113), (18, 11, 961), (18, 12, 2046), (18, 13, 540), (18, 14, 727),
-     (18, 15, 1017), (18, 16, 950), (18, 17, 284), (18, 18, 0), (18, 19, 560), (18, 20, 412), (18, 21, 643),
-     (18, 22, 2392), (18, 23, 882)],
-    [(19, 0, 393), (19, 1, 330), (19, 2, 498), (19, 3, 654), (19, 4, 444), (19, 5, 640), (19, 6, 775), (19, 7, 1049),
-     (19, 8, 19), (19, 9, 664), (19, 10, 1349), (19, 11, 495), (19, 12, 2325), (19, 13, 602), (19, 14, 689),
-     (19, 15, 942), (19, 16, 889), (19, 17, 740), (19, 18, 560), (19, 19, 0), (19, 20, 641), (19, 21, 547),
-     (19, 22, 2641), (19, 23, 1035)],
-    [(20, 0, 579), (20, 1, 577), (20, 2, 1136), (20, 3, 1293), (20, 4, 602), (20, 5, 834), (20, 6, 586), (20, 7, 422),
-     (20, 8, 642), (20, 9, 1293), (20, 10, 745), (20, 11, 1132), (20, 12, 1712), (20, 13, 915), (20, 14, 1088),
-     (20, 15, 1382), (20, 16, 1316), (20, 17, 686), (20, 18, 412), (20, 19, 641), (20, 20, 0), (20, 21, 977),
-     (20, 22, 2044), (20, 23, 477)],
-    [(21, 0, 939), (21, 1, 401), (21, 2, 535), (21, 3, 629), (21, 4, 991), (21, 5, 311), (21, 6, 713), (21, 7, 1286),
-     (21, 8, 566), (21, 9, 827), (21, 10, 1721), (21, 11, 523), (21, 12, 2677), (21, 13, 166), (21, 14, 141),
-     (21, 15, 414), (21, 16, 353), (21, 17, 583), (21, 18, 643), (21, 19, 547), (21, 20, 977), (21, 21, 0),
-     (21, 22, 3016), (21, 23, 1446)],
-    [(22, 0, 2373), (22, 1, 2618), (22, 2, 3131), (22, 3, 3284), (22, 4, 2350), (22, 5, 2821), (22, 6, 2435),
-     (22, 7, 1762), (22, 8, 2635), (22, 9, 3207), (22, 10, 1300), (22, 11, 3130), (22, 12, 359), (22, 13, 2931),
-     (22, 14, 3116), (22, 15, 3408), (22, 16, 3341), (22, 17, 2585), (22, 18, 2392), (22, 19, 2641), (22, 20, 2044),
-     (22, 21, 3016), (22, 22, 0), (22, 23, 1605)],
-    [(23, 0, 799), (23, 1, 1047), (23, 2, 1527), (23, 3, 1681), (23, 4, 789), (23, 5, 1311), (23, 6, 1019),
-     (23, 7, 479), (23, 8, 1030), (23, 9, 1624), (23, 10, 327), (23, 11, 1526), (23, 12, 1294), (23, 13, 1391),
-     (23, 14, 1562), (23, 15, 1855), (23, 16, 1790), (23, 17, 1141), (23, 18, 882), (23, 19, 1035), (23, 20, 477),
-     (23, 21, 1446), (23, 22, 1605), (23, 23, 0)]
-]
-
-ciudades = ["Ciudad autonoma de Bs.As.", "Cordoba", "Corrientes", "Formosa", "La Plata", "La Rioja", "Mendoza",
-            "Neuquen", "Parana", "Posadas", "Rawson",
-            "Resistencia", "Rio Gallegos", "San Fernando del Valle de Catamarca", "San Miguel de Tucuman",
-            "San salvador de Jujuy", "Salta",
-            "San Juan", "San Luis", "Santa Fe", "Santa Rosa", "Santiago del estero", "Ushuaia", "Viedma"]
+from typing import List
+from functools import reduce
+from ciudad import Ciudad
+import matplotlib.pyplot as plt
+from data import ciudades, distancias_entre_ciudades
+from utils import  dibujar_recorrido
+import random
+import os
 
 
-def get_recorrido_minimo( ciu_inicial:int):
-    distancias_entre_ciudades_copy = deepcopy(distancias_entre_ciudades)
+CANTIDAD_ITERACIONES = 200
+PROBABILIDAD_CROSSOVER = 0.75
+PROBABILIDAD_MUTACION = 0.01
+CANTIDAD_ELITISMO = 10
+
+distancias = distancias_entre_ciudades
+
+
+def get_ciudad(ciudad_id:int):
+    for ciu in ciudades:
+        if ciu.id == ciudad_id:
+            return ciu
+    return None
+
+
+def get_distancia(ciu1_id:int,ciu2_id:Ciudad):
+    """Funcion que dadas 2 ciudades retorna la distancia entre ellas
+    """
+
+    for dist in distancias:
+        if (ciu1_id== dist[0] or ciu1_id == dist[1]) and (ciu2_id == dist[0] or ciu2_id == dist[1]):
+            return dist[2]
+
+    else:
+        return None
+def get_recorrido_minimo( ciu_inicial:Ciudad):
+    """Funcion que obtiene el recorrido minimo
+    para visitar todas las capitales del pais
+    Retorna una tupla que contiene la lista del recorrido, y la distancia total recorrida"""
+    ciudades_no_recorridas = deepcopy(ciudades)
+    ciudades_no_recorridas.remove(ciu_inicial)
+    recorrido = [ciu_inicial]
     ciu_actual = ciu_inicial
-    ciudades_visitadas = [ciu_actual]
-    acum_distancia = 0
+    distancia_recorrida = 0
     for i in range(len(ciudades)-1):
-        distancias = distancias_entre_ciudades_copy[ciu_actual]
-        distancias.remove((ciu_actual, ciu_actual, 0))
-        index_prov_mas_cercana = 0
-        minima_distancia = 1000000000000
-        for (i, prov, dist) in distancias:
-            if dist<minima_distancia and prov not in ciudades_visitadas:
-                minima_distancia = dist
-                index_prov_mas_cercana = prov
-        acum_distancia += minima_distancia
-        ciu_actual = index_prov_mas_cercana
-        ciudades_visitadas.append(index_prov_mas_cercana)
-    acum_distancia += distancias_entre_ciudades_copy[ciu_actual][ciudades_visitadas[0]][2]
-    ciudades_visitadas.append(ciu_inicial)
-    ciudades_visitadas_str =[ ciudades[ciu] for ciu in ciudades_visitadas]
-    return ciudades_visitadas_str, acum_distancia
+       min_ciu = ciudades_no_recorridas[0]
+       min_dist = get_distancia(min_ciu.id, ciu_actual.id)
+       for ciu in ciudades_no_recorridas:
+           distancia = get_distancia(ciu_actual.id, ciu.id)
+           if distancia < min_dist:
+               min_dist = distancia
+               min_ciu = ciu
+       ciudades_no_recorridas.remove(min_ciu)
+       recorrido.append(min_ciu)
+       ciu_actual = min_ciu
+       distancia_recorrida += min_dist
+    recorrido.append(ciu_inicial)
+    distancia_recorrida += get_distancia(ciu_actual.id, ciu_inicial.id)
+    return recorrido,distancia_recorrida
+
+
+
+
+
 
 
 def opcion1():
@@ -131,17 +71,18 @@ def opcion1():
     for (i, prov) in enumerate(ciudades):
         print(f"{i}--{prov}")
     print("Ingrese numero de la provinica que quiera elegir:")
-    ciu_inicial_int = int(input())
-    trayecto,distancia_recorrida = get_recorrido_minimo(ciu_inicial_int)
-    ciu_inicial = ciudades[ciu_inicial_int]
+    ciu_inicial_index = int(input())
+    ciu_inicial = ciudades[ciu_inicial_index]
+    recorrido,distancia_recorrida = get_recorrido_minimo(ciu_inicial)
     print(f"Ciudad inicial: {ciu_inicial}")
     print(f"Longitud de trayecto: {distancia_recorrida}")
-    print(f"Trayecto: \n{trayecto}")
+    print(f"Trayecto: \n{recorrido}")
+    dibujar_recorrido(recorrido,distancia_recorrida)
 
 
 def opcion2():
-    recorridos = [get_recorrido_minimo(ciu) for ciu in range(24) ]
-    (min_recorrido, min_distancia) = recorridos[0][0],recorridos[0][1]
+    recorridos = [get_recorrido_minimo(ciu) for ciu in ciudades ]
+    (min_recorrido, min_distancia) = (recorridos[0][0],recorridos[0][1])
     for (reco, dist) in recorridos:
         if dist<min_distancia:
             min_recorrido = reco
@@ -149,6 +90,147 @@ def opcion2():
     print(f"Ciudad inicial: {min_recorrido[0]}")
     print(f"Longitud de trayecto: {min_distancia}")
     print(f"Trayecto: \n{min_recorrido}")
+    dibujar_recorrido(min_recorrido,min_distancia)
+
+
+def opcion3():
+    def func_obj(cromosoma:List[Ciudad]):
+        distancia = 0
+        ciudad_anterior = cromosoma[0]
+
+        for ciudad in cromosoma:
+            distancia += get_distancia(ciudad, ciudad_anterior)
+            ciudad_anterior = ciudad
+        return distancia
+
+
+    def elitismo(poblacion, poblacion_fitness):
+        poblacion_ordenada = sorted(zip(poblacion_fitness,poblacion), reverse= True)
+        ciudades_por_elitismo = []
+        for i in range(CANTIDAD_ELITISMO):
+            ciudades_por_elitismo.append(poblacion_ordenada[i][1])
+        return ciudades_por_elitismo
+
+    def seleccion_torneo(poblacion, poblacion_fitness):
+        seleccionados = []
+        for i in range(2):
+            # torneo = random.sample(poblacion, 2) # selecciona 2 individuos al azar de la población
+            """
+            aptitudes = [individuo.aptitud() for individuo in torneo] # evalúa la aptitud de cada uno
+            """
+            torneo = [random.randint(0, len(poblacion) - 1), random.randint(0, len(poblacion) - 1)]
+            min_poblacion_fitness = max([poblacion_fitness[i] for i in torneo])
+            index_max_fitness = poblacion_fitness.index(min_poblacion_fitness)
+            seleccionados.append(poblacion[index_max_fitness])
+        return tuple(seleccionados)
+
+    def crossover(padre1:List[Ciudad],padre2:List[Ciudad]):
+        if random.random() < PROBABILIDAD_CROSSOVER:
+            hijo1 = []
+            hijo2 = []
+
+            for i in range(len(padre1)):
+                hijo1.append(0)
+                hijo2.append(0)
+            indice = 0
+            elemento_inicial = padre1[0]
+            while padre2[indice] != elemento_inicial:
+                hijo1[indice] = padre1[indice]
+                indice = padre1.index(padre2[indice])
+            hijo1[indice] = padre1[indice]
+
+            for (i,ciu) in enumerate(hijo1):
+                if ciu == 0:
+                    hijo1[i] = padre2[i]
+                    hijo2[i] = padre1[i]
+                else:
+                    hijo2[i] = padre2[i]
+
+            return hijo1, hijo2
+        else:
+            return padre1, padre2
+
+    def mutacion(cromosoma):
+        if random.random() < PROBABILIDAD_MUTACION:
+            ind1 = random.randint(0,len(cromosoma)-1)
+            ind2 = random.randint(0,len(cromosoma)-1)
+            while ind1 == ind2:
+                ind2 = random.randint(0, len(cromosoma)-1)
+            aux = cromosoma[ind1]
+            cromosoma[ind1] = cromosoma[ind2]
+            cromosoma[ind2]=aux
+
+
+
+
+    historico_minimo=[]
+    historico_maximo = []
+    historico_promedio = []
+
+    ciudades_id = [ciudad.id for ciudad in ciudades]
+    #Generamos Poblacion Inicial
+    poblacion_inicial = []
+    for i in range(50):
+        cromosoma = random.sample(ciudades_id, len(ciudades_id))
+        poblacion_inicial.append(cromosoma)
+
+    poblacion_anterior = poblacion_inicial
+
+    for i in range(CANTIDAD_ITERACIONES):
+
+        funciones_objetivo = [func_obj(cromo) for cromo in poblacion_anterior]
+        poblacion_fitness = [1 / fun for fun in funciones_objetivo]
+        poblacion_nueva = elitismo(poblacion_anterior, poblacion_fitness)
+        minimo_pob = min(funciones_objetivo)
+        maximo_pob = max(funciones_objetivo)
+        promedio_pob = sum(funciones_objetivo)/ len(funciones_objetivo)
+
+        historico_minimo.append(minimo_pob)
+        historico_maximo.append(maximo_pob)
+        historico_promedio.append(promedio_pob)
+
+        print(f"ITERACION {i}")
+        print(f"maximo: {maximo_pob}")
+        print(f"minimo: {minimo_pob}")
+        print(f"promedio: {promedio_pob}")
+        for j in range((len(poblacion_inicial)-CANTIDAD_ELITISMO)//2):
+            seleccionados  = seleccion_torneo(poblacion_anterior, poblacion_fitness)
+            (hijo1, hijo2) = crossover(seleccionados[0],seleccionados[1])
+            mutacion(hijo1)
+            mutacion(hijo2)
+            poblacion_nueva.append(hijo1)
+            poblacion_nueva.append(hijo2)
+
+        poblacion_anterior = poblacion_nueva
+    funciones_objetivo = [func_obj(reco) for reco in poblacion_anterior]
+    minimo_pob = min(zip(funciones_objetivo, poblacion_anterior))
+    maximo_pob = max(funciones_objetivo)
+    promedio_pob = sum(funciones_objetivo) / len(funciones_objetivo)
+    historico_minimo.append(minimo_pob[0])
+    historico_maximo.append(maximo_pob)
+    historico_promedio.append(promedio_pob)
+    print(f"ITERACION 200")
+    print(f"maximo: {maximo_pob}")
+    print(f"minimo: {minimo_pob[0]}")
+    print(f"promedio: {promedio_pob}")
+    recorrido = [get_ciudad(id) for id in minimo_pob[1]]
+    poblaciones = [i for i in range(len(historico_promedio))]
+    plt.plot(poblaciones, historico_maximo, "g", label="max")
+    plt.plot(poblaciones, historico_minimo, "b", label="avg")
+    plt.plot(poblaciones, historico_promedio, "r", label="min")
+    plt.title("Máximo, mínimo y promedio Historico")
+    plt.xlabel("Numero de iteraciones")
+    plt.ylabel("Valores")
+    plt.show()
+    dibujar_recorrido(recorrido, minimo_pob[0])
+
+
+
+
+
+
+
+
 
 
 
@@ -165,17 +247,17 @@ def menu(opciones):
         print("0- Salir")
         opciones = int(input("Ingrese una opcion: "))
         if opciones == 1:
-            os.system('cls')
             opcion1()
 
         if opciones == 2:
-            os.system('cls')
             opcion2()
+
         if opciones == 3:
-            os.system('cls')
-            # opcion3()
+            opcion3()
+
         if opciones == 0:
             break
+
 
 
 opciones = 1
