@@ -23,21 +23,7 @@ import folium
 
 
 
-def get_distancia(ciu1:Ciudad,ciu2:Ciudad):
-    """Funcion que dadas 2 ciudades retorna la distancia entre ellas
-    """
-    if not isinstance(ciu1, Ciudad) or not isinstance(ciu2, Ciudad):
-        raise ValueError("Se deben ingresar instancias de Ciudades")
-    if ciu1 == ciu2:
-        return 0
-    distancias = distancias_entre_ciudades
 
-    for dist in distancias:
-        if ciu1 in dist and ciu2 in dist:
-            return dist[2]
-
-    else:
-        return None
 
 
 def dibujar_recorrido(recorrido:List[Ciudad], distancia:int):

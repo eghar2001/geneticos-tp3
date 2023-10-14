@@ -43,7 +43,7 @@ def get_distancias():
         for ind_row in range(fila_inicial,cant_filas+1):
             ciu_dist = ciudades[ind_row-2]
             dist = int(dataframe.cell(column=ind_col, row=ind_row).value)
-            distancias.append((ciu_act, ciu_dist, dist))
+            distancias.append((ciu_act.id, ciu_dist.id, dist))
         fila_inicial += 1
     return distancias
 
