@@ -34,11 +34,11 @@ class Ciudad:
 
 
     def __str__(self):
-        return self._nombre
+        return self.nombre
 
 
     def __repr__(self):
-        return ""+self._nombre
+        return str(self.id)
 
     def __eq__(self,other) -> bool:
         if not isinstance(other, Ciudad):

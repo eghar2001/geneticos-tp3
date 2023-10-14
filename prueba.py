@@ -1,7 +1,10 @@
 from copy import deepcopy
+from typing import List
+
 from ciudad import Ciudad
 from data import ciudades
 from utils import get_distancia, dibujar_recorrido
+import random
 import os
 
 def get_recorrido_minimo( ciu_inicial:Ciudad):
@@ -63,6 +66,79 @@ def opcion2():
     dibujar_recorrido(min_recorrido,min_distancia)
 
 
+def opcion3():
+    def func_obj(cromosoma:List[Ciudad]):
+        distancia = 0
+        ciudad_anterior = cromosoma[0]
+        for ciudad in cromosoma:
+            distancia += get_distancia(ciudad, ciudad_anterior)
+            ciudad_anterior = ciudad
+        return distancia
+
+    def seleccion_torneo(poblacion, poblacion_fitness):
+        seleccionados = []
+        for i in range(2):
+            # torneo = random.sample(poblacion, 2) # selecciona 2 individuos al azar de la población
+            """
+            aptitudes = [individuo.aptitud() for individuo in torneo] # evalúa la aptitud de cada uno
+            """
+            torneo = [random.randint(0, len(poblacion) - 1), random.randint(0, len(poblacion) - 1)]
+            min_poblacion_fitness = min([poblacion_fitness[i] for i in torneo])
+            index_min_fitness = poblacion_fitness.index(min_poblacion_fitness)
+            seleccionados.append(poblacion[index_min_fitness])
+        return tuple(seleccionados)
+    def crossover(padre1:List[Ciudad],padre2:List[Ciudad]):
+        hijo1 = []
+        hijo2 = []
+        for i in range(len(padre1)):
+            hijo1.append(0)
+            hijo2.append(0)
+        indice = 0
+
+        elemento_inicial = padre1[0]
+        while padre2[indice] != elemento_inicial:
+            hijo1[indice] = padre1[indice]
+            indice = padre1.index(padre2[indice])
+        hijo1[indice] = padre1[indice]
+
+        for (i,ciu) in enumerate(hijo1):
+            if ciu == 0:
+                hijo1[i] = padre2[i]
+                hijo2[i] = padre1[i]
+            else:
+                hijo2[i] = padre2[i]
+
+        return hijo1, hijo2
+
+
+
+
+    poblacion_inicial = []
+    for i in range(50):
+        cromosoma = random.sample(ciudades, len(ciudades))
+        poblacion_inicial.append(cromosoma)
+
+    poblacion_anterior = poblacion_inicial
+    poblacion_nueva = []
+    for i in range(len(poblacion_inicial)//2):
+
+        funciones_objetivo = [func_obj(cromo) for cromo in poblacion_anterior]
+
+        total_funciones_obj = sum(funciones_objetivo)
+
+        poblacion_fitness = [fun/total_funciones_obj for fun in funciones_objetivo]
+        seleccionados  = seleccion_torneo(poblacion_anterior, poblacion_fitness)
+        (hijo1, hijo2) = crossover(seleccionados[0],seleccionados[1])
+        poblacion_nueva.append(hijo1)
+        poblacion_nueva.append(hijo2)
+
+
+
+
+
+
+
+
 
 
 
@@ -84,8 +160,7 @@ def menu(opciones):
             opcion2()
 
         if opciones == 3:
-            print("No implementado")
-            #opcion3()
+            opcion3()
 
         if opciones == 0:
             break
